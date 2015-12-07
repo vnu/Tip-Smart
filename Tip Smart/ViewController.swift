@@ -41,17 +41,27 @@ class ViewController: UIViewController {
     @IBOutlet weak var splitTotalLabel: UILabel!
     @IBOutlet weak var splitOverallTipLabel: UILabel!
     @IBOutlet weak var splitOverallTotalLabel: UILabel!
+    var tipPercentages = [15.0, 18.0, 20.0]
     
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        tipField.text = "\(tipPercentages[0])"
+    }
+    
+    func updateUserDefaults(){
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let tipIndex = defaults.integerForKey("ServiceTipIndex")
+        serviceTipControl.selectedSegmentIndex = tipIndex
+        tipPercentages = [defaults.doubleForKey("SetSadTip"),defaults.doubleForKey("SetMehTip"),defaults.doubleForKey("SetHappyTip")]
+        tipField.text = "\(tipPercentages[tipIndex])"
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         billField.becomeFirstResponder()
+        updateUserDefaults()
     }
     
     override func didReceiveMemoryWarning() {
@@ -138,7 +148,6 @@ class ViewController: UIViewController {
     }
     
     @IBAction func serviceTipControlChanged(sender: AnyObject) {
-        let tipPercentages = [15, 18, 20]
         let selectedIndex = serviceTipControl.selectedSegmentIndex
         if(selectedIndex < 3){
             view.endEditing(true)
@@ -161,7 +170,6 @@ class ViewController: UIViewController {
 
     
     @IBAction func totalRoundUpPressed(sender: AnyObject) {
-        print("ROund up")
         let totalValue = (billTotalField.text! as NSString).doubleValue
         billTotalField.text = "\(floor(totalValue)+1)"
         UpdateOnTotalChanges()
