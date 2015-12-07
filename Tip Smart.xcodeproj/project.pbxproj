@@ -14,6 +14,8 @@
 		E47819C81C14CBEB000FAF31 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E47819C61C14CBEB000FAF31 /* LaunchScreen.storyboard */; };
 		E47819D31C14CBEB000FAF31 /* Tip_SmartTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E47819D21C14CBEB000FAF31 /* Tip_SmartTests.swift */; };
 		E47819DE1C14CBEB000FAF31 /* Tip_SmartUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E47819DD1C14CBEB000FAF31 /* Tip_SmartUITests.swift */; };
+		E47819EC1C14CD44000FAF31 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E47819EB1C14CD44000FAF31 /* NavigationController.swift */; };
+		E47819EE1C14DA73000FAF31 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E47819ED1C14DA73000FAF31 /* SettingsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,8 @@
 		E47819D91C14CBEB000FAF31 /* Tip SmartUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Tip SmartUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E47819DD1C14CBEB000FAF31 /* Tip_SmartUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tip_SmartUITests.swift; sourceTree = "<group>"; };
 		E47819DF1C14CBEB000FAF31 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E47819EB1C14CD44000FAF31 /* NavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
+		E47819ED1C14DA73000FAF31 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,8 +101,8 @@
 		E47819BC1C14CBEB000FAF31 /* Tip Smart */ = {
 			isa = PBXGroup;
 			children = (
+				E47819EF1C14DAA0000FAF31 /* ViewControllers */,
 				E47819BD1C14CBEB000FAF31 /* AppDelegate.swift */,
-				E47819BF1C14CBEB000FAF31 /* ViewController.swift */,
 				E47819C11C14CBEB000FAF31 /* Main.storyboard */,
 				E47819C41C14CBEB000FAF31 /* Assets.xcassets */,
 				E47819C61C14CBEB000FAF31 /* LaunchScreen.storyboard */,
@@ -123,6 +127,16 @@
 				E47819DF1C14CBEB000FAF31 /* Info.plist */,
 			);
 			path = "Tip SmartUITests";
+			sourceTree = "<group>";
+		};
+		E47819EF1C14DAA0000FAF31 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				E47819BF1C14CBEB000FAF31 /* ViewController.swift */,
+				E47819EB1C14CD44000FAF31 /* NavigationController.swift */,
+				E47819ED1C14DA73000FAF31 /* SettingsViewController.swift */,
+			);
+			name = ViewControllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -257,7 +271,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				E47819C01C14CBEB000FAF31 /* ViewController.swift in Sources */,
+				E47819EC1C14CD44000FAF31 /* NavigationController.swift in Sources */,
 				E47819BE1C14CBEB000FAF31 /* AppDelegate.swift in Sources */,
+				E47819EE1C14DA73000FAF31 /* SettingsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
