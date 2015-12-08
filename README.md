@@ -13,8 +13,13 @@ Completed:
 [x] Optional: Using locale-specific currency and currency thousands separators.  
 [x] Optional: Making sure the keyboard is always visible and the bill amount is always the first responder. This way the user doesn't have to tap anywhere to use this app. Just launch the app and start typing.  
 
+#### User Bill, Split Bill and Settings update
 ![Video Walkthrough required](https://github.com/vnu/Tip-Smart/blob/master/TipSmartDemo/TipSmart1.gif)
+
+#### Locale update and stored state
 ![Video Walkthrough optional](https://github.com/vnu/Tip-Smart/blob/master/TipSmartDemo/TipSmart2.gif)
+
+#### Whole app walkthrough
 ![Video Walkthrough whole](https://github.com/vnu/Tip-Smart/blob/master/TipSmartDemo/TipSmart3.gif)
 
 
