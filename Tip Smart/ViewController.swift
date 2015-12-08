@@ -13,10 +13,16 @@ extension Double {
     func format(f: Double) -> String {
         return String(format: "%\(f)f", self)
     }
+
+    func localeFormat() -> String {
+        let formatter = NSNumberFormatter()
+        formatter.numberStyle = .CurrencyStyle
+        return formatter.stringFromNumber(self)!
+    }
 }
 
 class ViewController: UIViewController {
-
+    
     //Fields
     
     @IBOutlet weak var billField: UITextField!
@@ -26,6 +32,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var tipField: UITextField!
     @IBOutlet weak var tipAmountField: UITextField!
     @IBOutlet weak var billTotalField: UILabel!
+    @IBOutlet weak var currencyLabel: UILabel!
+    
     
     // Split Bill
     @IBOutlet weak var splitSwitchView: UIView!
@@ -43,19 +51,13 @@ class ViewController: UIViewController {
     @IBOutlet weak var splitOverallTotalLabel: UILabel!
     var tipPercentages = [15.0, 18.0, 20.0]
     
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        tipField.text = "\(tipPercentages[0])"
-    }
-    
-    func updateUserDefaults(){
-        let defaults = NSUserDefaults.standardUserDefaults()
-        let tipIndex = defaults.integerForKey("ServiceTipIndex")
-        serviceTipControl.selectedSegmentIndex = tipIndex
-        tipPercentages = [defaults.doubleForKey("SetSadTip"),defaults.doubleForKey("SetMehTip"),defaults.doubleForKey("SetHappyTip")]
-        tipField.text = "\(tipPercentages[tipIndex])"
+        let notificationCenter = NSNotificationCenter.defaultCenter()
+        notificationCenter.addObserver(self, selector: "storeBillLastValues", name: UIApplicationWillResignActiveNotification,
+            object: nil)
+        notificationCenter.addObserver(self, selector: "updateUserDefaults", name: UIApplicationDidBecomeActiveNotification,
+            object: nil)
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -69,7 +71,59 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    //Smart Tip View
+    //Initial setup and custom values
+    func storeBillLastValues(){
+        if((self.billField.text! as NSString).doubleValue > 0){
+            let defaults = NSUserDefaults.standardUserDefaults()
+            defaults.setBool(true, forKey: "HasLastBillData")
+            defaults.setObject(self.billField.text, forKey: "lastBillAmount")
+            defaults.setObject(NSDate(), forKey: "lastBillTime")
+            defaults.setInteger(self.serviceTipControl.selectedSegmentIndex, forKey: "lastTipIndex")
+            defaults.synchronize()
+            self.hideSmartTipView()
+        }
+    }
+    
+    func setLocaleCurrencySymbol(){
+        currencyLabel.text = "\(NSNumberFormatter().currencySymbol)"
+    }
+    
+    func setCustomTips(defaults: NSUserDefaults){
+        if(defaults.boolForKey("HasCustomTips")){
+            self.tipPercentages = [defaults.doubleForKey("SetSadTip"),defaults.doubleForKey("SetMehTip"),defaults.doubleForKey("SetHappyTip")]
+        }
+        setTipFieldRate(defaults.integerForKey("ServiceTipIndex"))
+    }
+    
+    func setTipFieldRate(tipIndex: Int){
+        serviceTipControl.selectedSegmentIndex = tipIndex
+        tipField.text = "\(tipPercentages[tipIndex])"
+    }
+    
+    func restoreLastBillData(defaults: NSUserDefaults){
+        let elapsedTime = NSDate().timeIntervalSinceDate(defaults.objectForKey("lastBillTime") as! NSDate)
+        if(elapsedTime < 20){
+            setTipFieldRate(defaults.integerForKey("lastTipIndex"))
+            billField.text = "\(defaults.objectForKey("lastBillAmount") as! NSString)"
+            self.updateTotal()
+            self.showSmartTipView()
+        }else{
+            defaults.setBool(false, forKey: "HasLastBillData")
+            billField.text = ""
+            defaults.synchronize()
+        }
+    }
+    
+    func updateUserDefaults(){
+        let defaults = NSUserDefaults.standardUserDefaults()
+        setCustomTips(defaults)
+        setLocaleCurrencySymbol()
+        if(defaults.boolForKey("HasLastBillData")){
+            restoreLastBillData(defaults)
+        }
+    }
+    
+    //Smart Tip View Animations
     func hideSmartTipView(){
         UIView.animateWithDuration(0.3, delay: 0.2, options: .CurveEaseInOut, animations: {
             var smartTipViewFrame =  self.smartTipView.frame
@@ -84,8 +138,6 @@ class ViewController: UIViewController {
     func showSmartTipView(){
         smartTipView.hidden = false
         UIView.animateWithDuration(1.0, delay: 0.2, options: .CurveEaseInOut, animations: {
-            print("\(self.smartTipView.frame)")
-            
             var smartTipViewFrame =  self.smartTipView.frame
             smartTipViewFrame.origin.y = 130
             self.smartTipView.frame = smartTipViewFrame
@@ -95,12 +147,11 @@ class ViewController: UIViewController {
     }
     
     
-    //Bill Calculations
+    //Bill Calculations to get tip, tip amount, total amount given one of the values.
     func calculateValues(tipValue:Double=0.00,tipAmount:Double=0.00,totalAmount:Double=0.00) ->
         (tipValue:Double,tipAmount:Double,totalAmount:Double)
     {
         let billAmount = (billField.text! as NSString).doubleValue
-//        splitBillLabel.text = "\(billAmount)"
         if(billAmount < 0){
             return(0,0,0)
         }
@@ -120,6 +171,10 @@ class ViewController: UIViewController {
         return(tipValue, tipAmount, totalAmount);
     }
     
+    
+    //Individual Bill related
+    
+    //Updates the total when Bill or Tip changes.
     func updateTotal(){
         let tipValue = (tipField.text! as NSString).doubleValue
         let billValues = calculateValues(tipValue)
@@ -127,9 +182,6 @@ class ViewController: UIViewController {
         billTotalField.text = "\(billValues.totalAmount.format(0.2))"
         updateSplitBillValues()
     }
-    
-    
-    //User actions
     
     @IBAction func onTap(sender: AnyObject) {
         view.endEditing(true)
@@ -144,7 +196,7 @@ class ViewController: UIViewController {
         }else{
             hideSmartTipView()
         }
-
+        
     }
     
     @IBAction func serviceTipControlChanged(sender: AnyObject) {
@@ -158,7 +210,7 @@ class ViewController: UIViewController {
         }
     }
     
-    //Round up
+    //Round up the overall Total Bill
     func UpdateOnTotalChanges(){
         let totalAmount = (billTotalField.text! as NSString).doubleValue
         let billValues = calculateValues(totalAmount: totalAmount)
@@ -167,7 +219,7 @@ class ViewController: UIViewController {
         updateSplitBillValues()
     }
     
-
+    
     
     @IBAction func totalRoundUpPressed(sender: AnyObject) {
         let totalValue = (billTotalField.text! as NSString).doubleValue
@@ -180,6 +232,8 @@ class ViewController: UIViewController {
         billTotalField.text = "\(ceil(totalValue)-1)"
         UpdateOnTotalChanges()
     }
+    
+    
     
     // Split Bill
     
@@ -202,9 +256,9 @@ class ViewController: UIViewController {
                 print("Split View closed!")
                 self.splitBillView.hidden = true
         })
-
+        
     }
-
+    
     func updateSplit(byValue: Int){
         let splitInto = Int(splitIntoField.text!)
         if(byValue > 0 || (byValue < 0 && splitInto > 1)){
@@ -216,15 +270,15 @@ class ViewController: UIViewController {
     
     func updateSplitBillValues(){
         if(splitBillSwitch.on){
-        let splitInto = (splitIntoField.text! as NSString).doubleValue
-        let billAmount = (billField.text! as NSString).doubleValue / splitInto
-        let tipAmount = (tipAmountField.text! as NSString).doubleValue / splitInto
-        let totalAmount = billAmount + tipAmount
-        splitBillLabel.text = "\(billAmount.format(0.2))"
-        splitTipLabel.text = "\(tipAmount.format(0.2))"
-        splitTotalLabel.text = "\(totalAmount.format(0.2))"
-        splitOverallTipLabel.text = tipAmountField.text
-        splitOverallTotalLabel.text = billTotalField.text
+            let splitInto = (splitIntoField.text! as NSString).doubleValue
+            let billAmount = (billField.text! as NSString).doubleValue / splitInto
+            let tipAmount = (tipAmountField.text! as NSString).doubleValue / splitInto
+            let totalAmount = billAmount + tipAmount
+            splitBillLabel.text = "\(billAmount.format(0.2))"
+            splitTipLabel.text = "\(tipAmount.format(0.2))"
+            splitTotalLabel.text = "\(totalAmount.format(0.2))"
+            splitOverallTipLabel.text = tipAmountField.text
+            splitOverallTotalLabel.text = billTotalField.text
         }
     }
     
@@ -250,7 +304,7 @@ class ViewController: UIViewController {
     
     @IBAction func splitSwitchToggled(sender: AnyObject) {
         if(splitBillSwitch.on){
-           showSplitBillView()
+            showSplitBillView()
         }else{
             hideSplitBillView()
         }
@@ -261,6 +315,13 @@ class ViewController: UIViewController {
     
     @IBAction func decrSplitButtonPressed(sender: AnyObject) {
         updateSplit(-1)
+    }
+    
+    //To Test
+    func showAlert(message: String){
+        let alert = UIAlertController(title: "Alert", message: "Message: \(message)", preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "Click", style: UIAlertActionStyle.Default, handler: nil))
+        self.presentViewController(alert, animated: true, completion: nil)
     }
 }
 

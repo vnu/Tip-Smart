@@ -52,6 +52,7 @@ class SettingsViewController: UIViewController {
     
     @IBAction func onEditingDefaultTips(sender: AnyObject) {
         let defaults = NSUserDefaults.standardUserDefaults()
+        defaults.setBool(true, forKey: "HasCustomTips")
         defaults.setDouble((defaultSadTipField.text! as NSString).doubleValue, forKey: "SetSadTip")
         defaults.setDouble((defaultMehTipField.text! as NSString).doubleValue, forKey: "SetMehTip")
         defaults.setDouble((defaultHappyTipField.text! as NSString).doubleValue, forKey: "SetHappyTip")
