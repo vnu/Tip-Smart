@@ -244,7 +244,7 @@ class ViewController: UIViewController {
         UIView.animateWithDuration(0.5, delay: 0.2, options: .CurveEaseInOut, animations: {
             
             var splitSwitchViewFrame = self.splitSwitchView.frame
-            splitSwitchViewFrame.origin.y = 145
+            splitSwitchViewFrame.origin.y = 150
             
             var splitBillViewFrame =  self.splitBillView.frame
             splitBillViewFrame.origin.y =             splitSwitchViewFrame.origin.y + splitSwitchViewFrame.size.height
@@ -289,7 +289,7 @@ class ViewController: UIViewController {
         UIView.animateWithDuration(1.0, delay: 0.2, options: .CurveEaseInOut, animations: {
             
             var splitSwitchViewFrame = self.splitSwitchView.frame
-            splitSwitchViewFrame.origin.y = 95
+            splitSwitchViewFrame.origin.y = 98
             
             var splitBillViewFrame =  self.splitBillView.frame
             splitBillViewFrame.origin.y =             splitSwitchViewFrame.origin.y + splitSwitchViewFrame.size.height
