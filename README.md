@@ -21,8 +21,8 @@ Based on my personal past tipping preference, the Tip smart has the following fe
 * Ability to easily share individual bills with friends through email and message.
 
 ### Installation & Testing Instructions
-The app was developed for iPhone 5s. I did not set auto layouts or other size classes. 
-I tested completely in portait mode.
+The app in the master branch was developed for iPhone 5s. I did not set auto layouts or other size classes. I tested completely in portait mode.  
+However, I have another branch called autolayout that has the auto layout and uses size classes. Both the branches will not work in landscape mode. They work only with portait mode. I tested it through emulator and have been using my app on my iPhone 6 plus for all my tip Calculations :)
 
 
 ======
